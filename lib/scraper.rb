@@ -31,7 +31,6 @@ class Scraper
   end
 
   def print_courses
-    @title
     self.make_courses
     Course.all.each do |course|
       binding.pry
