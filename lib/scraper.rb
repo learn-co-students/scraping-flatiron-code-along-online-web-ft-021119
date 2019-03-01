@@ -13,24 +13,20 @@ class Scraper
   def get_page
     html = open('http://learn-co-curriculum.github.io/site-for-scraping/courses')
     doc = Nokogiri::HTML(html)
-    @@doc = doc
   end
 
   def get_courses
-    @@doc.css("section#course-grid article")
+    self.get_page.css("section#course-grid article")
+    #binding.pry
   end
 
   def make_courses
-    html = open('http://learn-co-curriculum.github.io/site-for-scraping/courses')
-    doc = Nokogiri::HTML(html)
-    courses = @@doc.css("section#course-grid article").text.split("  Learn More  ")
-    courses.each do |course|
-      if course
-        @@all << course
-        @title = course.split("Full-Time")[0].strip
-        @schedule = course.scan(/....(-Time)/)
-        @description = course.split("Full-Time")[1].strip
-      end
+    self.get_courses.map do |el|
+      course = Course.new
+      course.title = el.css("h2").text
+      course.schedule = el.css("date").text
+      course.description = el.css("p").text
+      #binding.pry
     end
   end
 
@@ -38,6 +34,7 @@ class Scraper
     @title
     self.make_courses
     Course.all.each do |course|
+      binding.pry
       if course.title
         puts "Title: #{course.title}"
         puts "  Schedule: #{course.schedule}"
